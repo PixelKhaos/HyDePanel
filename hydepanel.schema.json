@@ -243,8 +243,7 @@
         },
         "disabled_icon": {
           "type": "string"
-        },
-
+        }
       }
     },
     "hypr_idle": {
