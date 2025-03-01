@@ -573,6 +573,13 @@
           "type": "string"
         }
       },
+      "flattened_apps": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "List of app names whose notifications should be flattened (only keeping the most recent)"
+      },
       "$ref": "#/definitions/anchor",
       "auto_dismiss": {
         "type": "boolean"
@@ -586,7 +593,7 @@
       "play_sound": {
         "type": "boolean"
       },
-      "sound_fie": {
+      "sound_file": {
         "type": "string",
         "enum": [
           "notification1",

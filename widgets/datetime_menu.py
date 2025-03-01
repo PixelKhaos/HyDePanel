@@ -1,5 +1,4 @@
 import time
-from typing import List
 
 from fabric.notifications import Notification
 from fabric.utils import bulk_connect
@@ -183,20 +182,12 @@ class DateNotificationMenu(Box):
         )
 
         self.cache_notification_service = notification_service
+        self.notifications = self.cache_notification_service.get_deserialized()
 
         self.clock_label = Label(
             label=time.strftime("%H:%M"),
             style_classes="clock",
         )
-
-        self.notifications: List[Notification] = (
-            self.cache_notification_service.get_deserialized()
-        )
-
-        self.notifications_list = [
-            DateMenuNotification(notification=val, id=val["id"])
-            for val in self.notifications
-        ]
 
         self.notification_list_box = Box(
             orientation="v",
@@ -205,7 +196,10 @@ class DateNotificationMenu(Box):
             h_expand=True,
             style_classes="notification-list",
             visible=len(self.notifications) > 0,
-            children=self.notifications_list,
+            children=[
+                DateMenuNotification(notification=notif, id=i + 1)
+                for i, notif in enumerate(self.notifications)
+            ],
         )
 
         self.uptime = Label(style_classes="uptime")
@@ -218,7 +212,7 @@ class DateNotificationMenu(Box):
             v_align="center",
             v_expand=True,
             h_expand=True,
-            visible=len(self.notifications) == 0,  # visible if no notifications
+            visible=len(self.notifications) == 0,
             children=(
                 Image(
                     icon_name=icons["notifications"]["silent"],
@@ -332,6 +326,8 @@ class DateNotificationMenu(Box):
         if config["calendar"]:
             date_column.set_visible(True)
 
+        self.cache_notification_service.connect("notification_count",
+        self.on_notification_count)
         notification_service.connect("notification-added", self.on_new_notification)
         self.cache_notification_service.connect(
             "clear_all", self.on_clear_all_notifications
@@ -359,23 +355,37 @@ class DateNotificationMenu(Box):
         self.placeholder.set_visible(True)
 
     def on_new_notification(self, fabric_notif, id):
+        """Handle new notification."""
         if self.cache_notification_service.dont_disturb:
             return
 
-        notification: Notification = fabric_notif.get_notification_from_id(id)
+        # Get current notifications and rebuild list
+        self.notifications = self.cache_notification_service.get_deserialized()
+        self.notification_list_box.children = [
+            DateMenuNotification(notification=notif, id=i + 1)
+            for i, notif in enumerate(self.notifications)
+        ]
 
-        count = len(self.notification_list_box.children)
-
+        # Update UI state
         self.clear_icon.set_from_icon_name(icons["trash"]["full"], 15)
-
-        self.notification_list_box.add(
-            DateMenuNotification(
-                notification=notification,
-                id=count + 1 if count > 0 else 1,
-            )
-        )
         self.placeholder.set_visible(False)
         self.notification_list_box.set_visible(True)
+
+    def on_notification_count(self, service, count):
+        """Handle notification count changes."""
+        # Update our notifications list
+        self.notifications = self.cache_notification_service.get_deserialized()
+
+        # Rebuild notification list
+        self.notification_list_box.children = [
+            DateMenuNotification(notification=notif, id=i + 1)
+            for i, notif in enumerate(self.notifications)
+        ]
+
+        # Update UI state
+        self.clear_icon.set_from_icon_name(icons["trash"]["full"], 15)
+        self.placeholder.set_visible(count == 0)
+        self.notification_list_box.set_visible(count > 0)
 
     def update_ui(self, fabricator, value):
         self.clock_label.set_text(time.strftime("%H:%M"))

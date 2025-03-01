@@ -150,10 +150,12 @@ DEFAULT_CONFIG = {
     "notification": {
         "anchor": "top-right",
         "auto_dismiss": True,
+        "timeout": 5000,
+        "count": 5,
         "ignored": [],
-        "timeout": 3000,
-        "play_sound": False,
-        "sound_file": "notification4",
+        "flattened_apps": ["Spotify"],  # Default to flattening Spotify notifications
+        "play_sound": True,
+        "sound_file": "notification1",
     },
     "osd": {
         "enabled": True,
