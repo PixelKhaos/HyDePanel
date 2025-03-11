@@ -158,12 +158,15 @@ full_install() {
     # So if tesseract is selected for example, install user gets another prompt to select language packs
 
     # Install required packages
+    clear
+    gum style --foreground 10 --border-foreground 10 --border rounded \
+    --margin "1 0" --padding "1 2" "Installing HydePanel packages"
+
     quick_install
-    sleep 1
 
     # Install selected optional packages
 	if [ -n "$SELECTED" ]; then
-		gum spin --spinner dot --title "📦 Installing selected packages..." -- sleep 1
+		gum spin --spinner dot --title "📦 Installing selected optional packages..." -- sleep 2
 
 
 		# Run installation **without --noconfirm** so the user is prompted for conflicts
@@ -211,7 +214,7 @@ quick_install() {
 
     if [ ${#MISSING_AUR_PKGS[@]} -gt 0 ]; then
         echo -e "\e[33m⚠ Installing missing required packages from AUR...\e[0m"
-        $AUR_HELPER -S --needed "${MISSING_AUR_PKGS[@]}" &>/dev/null
+        $AUR_HELPER -S --needed --noconfirm "${MISSING_AUR_PKGS[@]}" &>/dev/null
         echo -e "\e[32m✔ Required AUR packages installed successfully.\e[0m"
     else
         echo -e "\e[32m✔ All required AUR packages are already installed.\e[0m"
