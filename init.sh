@@ -248,7 +248,7 @@ finish_install() {
 
     gum style \
         --foreground 10 --border-foreground 10 --border rounded \
-        --align center --width 60 --margin "1 2" --padding "1 3" \
+        --align center --width 60 --margin "1 0" --padding "1 2" \
         "✅ HydePanel Installation Complete!" "Run 'hydepanel start' to launch."
 }
 
