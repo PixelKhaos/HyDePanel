@@ -177,4 +177,8 @@ styles/theme.scss
 
 todo.md
 
+installed_packages.json
+
+hydepanel.pid
+
 # End of https://www.toptal.com/developers/gitignore/api/python
